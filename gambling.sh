@@ -51,15 +51,25 @@ function calfrequency(){
 		fi
 	done
 	count=0
+	frequency=0
 }
 
 function findLuckiestAndUnluckiest(){
 	arr="$@"
-	dayIndex=1
 	counter=0
 	var=`echo $1| awk -F"-" '{print $2}'`
 	maxFrequency=`echo $var| awk -F":" '{print $2}'`
+	type=`echo $var| awk -F":" '{print $1}'`
+	day=`echo $1| awk -F"-" '{print $2}'`
+	dayIndex=`echo $day| awk -F":" '{print $2}'`
 	
+	if [[ $type == "wfrequency" ]];
+	then
+		typeOfDay="Lukiest-Day"
+	else
+		typeOfDay="UnLukiest-Day"
+	fi
+		
 	for data in ${arr[@]}
 	do	
 		var=`echo $data| awk -F"-" '{print $2}'`
@@ -72,20 +82,21 @@ function findLuckiestAndUnluckiest(){
 			dayIndex=`echo $var| awk -F":" '{print $2}'`
 		fi
 	done
-
+	
+	echo "$typeOfDay --> day:$(($dayIndex+$((maxFrequency-1))))"
+	
 	for data in ${arr[@]}
 	do	
 		var=`echo $data| awk -F"-" '{print $2}'`
 		frequency=`echo $var| awk -F":" '{print $2}'`
-		type=`echo $var| awk -F":" '{print $1}'`
 		difference=$(($maxFrequency-$frequency))
-		if [ $difference -eq 0 ];
+		if [[ $difference == 0 ]];
 		then
-			if [[ $type == "wfrequency" ]];
+			var1=`echo $data| awk -F"-" '{print $1}'`
+			dayIndex1=`echo $var1| awk -F":" '{print $2}'`
+			if [[ $dayIndex1 -ne $dayIndex ]];
 			then
-				echo "Luckiest-day-->day:$(($dayIndex+$((maxFrequency-1))))"
-			else
-				echo "UnLuckiest-day-->day:$(($dayIndex+$((maxFrequency-1))))"
+				echo "$typeOfDay -->day:$(($dayIndex1+$((maxFrequency-1))))"
 			fi
 		fi
 	done
@@ -144,3 +155,15 @@ echo "--------------------------------------------------------------------------
 
 findLuckiestAndUnluckiest  ${winfrequency[@]}
 findLuckiestAndUnluckiest  ${lostfrequency[@]}
+
+echo "======================================================================================"
+
+if [ $win -gt $loss ];
+then	
+	echo "You can continue Gambling..."
+elif [ $win -lt $loss ];
+then
+	echo "You Should stop Gambling..."
+else
+	echo "Your Wish...."
+fi
