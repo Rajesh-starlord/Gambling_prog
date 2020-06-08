@@ -1,19 +1,19 @@
 #! /bin/bash 
 #gambling
 
-win=0
+winCount=0
 betno=0
 totalStock=100
-maxwin=150
-loss=0
-maxloss=50
-minbal=$(($totalStock-$maxloss))
+maxwinCount=150
+lossCount=0
+maxlossCount=50
+minbal=$(($totalStock-$maxlossCount))
 totalDaysToPlay=20
 dayCount=0
-winCountPerDay=0
-lostCountPerDay=0
+totalwinCountCountOfDay=0
+totalLostCountOfDay=0
 declare -a resultOftheDay
-declare -a winfrequency
+declare -a winCountfrequency
 declare -a lostfrequency
 
 count=0
@@ -30,7 +30,7 @@ function calfrequency(){
 			then
 				if [[ $1 == "Won" ]];
 				then
-					winfrequency[$i]="startDay:$(($count+1))-wfrequency:$frequency"
+					winCountfrequency[$i]="startDay:$(($count+1))-wfrequency:$frequency"
 				elif [[ $1 == "Lost" ]];
 				then
 					lostfrequency[$i]="startDay:$(($count+1))-lfrequency:$frequency"
@@ -43,7 +43,7 @@ function calfrequency(){
 		then
 			if [[ $1 == "Won" ]];
 			then
-				winfrequency[$i]="startDay:$(($count+1))-wfrequency:$(($frequency+1))"
+				winCountfrequency[$i]="startDay:$(($count+1))-wfrequency:$(($frequency+1))"
 			elif [[ $1 == "Lost" ]];
 			then
 				lostfrequency[$i]="startDay:$(($count+1))-lfrequency:$(($frequency+1))"
@@ -102,41 +102,41 @@ function findLuckiestAndUnluckiest(){
 	done
 	if [[ $type == "wfrequency" ]];
 	then
-		echo "MostWin:$(($maxFrequency*50))"
+		echo "MostwinCount:$(($maxFrequency*50))"
 	else
-		echo "GiantLoss:$(($maxFrequency*50))"
+		echo "GiantlossCount:$(($maxFrequency*50))"
 	fi
 
 }
 
 while [ $dayCount -lt $totalDaysToPlay ]
 do
-	while [ $totalStock -lt $maxwin ] && [ $totalStock -gt $minbal ]
+	while [ $totalStock -lt $maxwinCount ] && [ $totalStock -gt $minbal ]
 	do
 		rno=$(($RANDOM%3))
 
 		if [ $rno -eq 1 ];
 		then
-			win=$(($win+1))
+			winCount=$(($winCount+1))
 			betno=$(($betno+1))
 			totalStock=$(($totalStock+1))
 		elif [ $rno -eq 2 ];
 		then
 			betno=$(($betno+1))
-			loss=$(($loss+1))
+			lossCount=$(($lossCount+1))
 			totalStock=$(($totalStock-1))
 		fi
 	done
 	
 	if [ $totalStock -eq 150 ];
 	then
-		echo "day:$(($dayCount+1)) --> you won $win times and loose $loss times || totalbalance = $totalStock|| result : Won"
-		winCountPerDay=$(($winCountPerDay+1))
+		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $totalStock|| result : Won"
+		totalwinCountCountOfDay=$(($totalwinCountCountOfDay+1))
 		resultOftheDay[$dayCount]="Won"
 	elif [ $totalStock -eq 50 ];
 	then
-		echo "day:$(($dayCount+1)) --> you won $win times and loose $loss times || totalbalance = $totalStock|| result : Lost"
-		lostCountPerDay=$(($lostCountPerDay+1))
+		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $totalStock|| result : Lost"
+		totalLostCountOfDay=$(($totalLostCountOfDay+1))
 		resultOftheDay[$dayCount]="Lost"
 	fi
 	dayCount=$(($dayCount+1))
@@ -145,25 +145,28 @@ done
 
 
 echo "===================================================================================="
-echo "This Month -->you won $winCountPerDay times and loose $lostCountPerDay times"
+echo "This Month -->you won $totalwinCountCountOfDay times and loose $totalLostCountOfDay times"
 echo "------------------------------------------------------------------------------------"
 calfrequency "Won"
-echo ${winfrequency[@]}
+echo ${winCountfrequency[@]}
 calfrequency "Lost"
 echo ${lostfrequency[@]}
 echo "------------------------------------------------------------------------------------"
 
-findLuckiestAndUnluckiest  ${winfrequency[@]}
+findLuckiestAndUnluckiest  ${winCountfrequency[@]}
 findLuckiestAndUnluckiest  ${lostfrequency[@]}
 
 echo "======================================================================================"
 
-if [ $win -gt $loss ];
+if [ $totalwinCountCountOfDay -gt $totalLostCountOfDay ];
 then	
+	echo "you won $ $(((($totalwinCountCountOfDay-$totalLostCountOfDay))*50)) This month"
 	echo "You can continue Gambling..."
-elif [ $win -lt $loss ];
+elif [ $totalwinCountCountOfDay -lt $totalLostCountOfDay ];
 then
+	echo "you lost $ $(((($totalLostCountOfDay-$totalwinCountCountOfDay))*50)) This month"
 	echo "You Should stop Gambling..."
 else
+	echo "equal winCount and lossCount value"
 	echo "Your Wish...."
 fi
