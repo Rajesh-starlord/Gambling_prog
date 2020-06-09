@@ -1,14 +1,16 @@
 #! /bin/bash 
 #gambling
 
+
+TOTAL_STACK=100
+MAX_STACK=150
+MIN_STACK=50
+TOTAL_DAYS_TO_PLAY=30
+
 winCount=0
 betno=0
-totalStock=100
-maxwinCount=150
 lossCount=0
-maxlossCount=50
-minbal=$(($totalStock-$maxlossCount))
-totalDaysToPlay=20
+minbal=$(($TOTAL_STACK-$MIN_STACK))
 dayCount=0
 totalwinCountCountOfDay=0
 totalLostCountOfDay=0
@@ -19,9 +21,9 @@ declare -a lostfrequency
 count=0
 frequency=0
 function calfrequency(){
-	for (( i=count;i<20;i++ ))
+	for (( i=count;i<30;i++ ))
 	do	
-		if [[ ${resultOftheDay[i]} == $1 ]] && [ $i -ne 19 ];
+		if [[ ${resultOftheDay[i]} == $1 ]] && [ $i -ne 29 ];
 		then
 			frequency=$(($frequency+1))
 		elif [[ ${resultOftheDay[i]} != $1 ]];
@@ -39,7 +41,7 @@ function calfrequency(){
 			count=$(($i+1))
 			frequency=0
 
-		elif  [ $i -eq 19 ];
+		elif  [ $i -eq 29 ];
 		then
 			if [[ $1 == "Won" ]];
 			then
@@ -109,9 +111,9 @@ function findLuckiestAndUnluckiest(){
 
 }
 
-while [ $dayCount -lt $totalDaysToPlay ]
+while [ $dayCount -lt $TOTAL_DAYS_TO_PLAY ]
 do
-	while [ $totalStock -lt $maxwinCount ] && [ $totalStock -gt $minbal ]
+	while [ $TOTAL_STACK -lt $MAX_STACK ] && [ $TOTAL_STACK -gt $minbal ]
 	do
 		rno=$(($RANDOM%3))
 
@@ -119,28 +121,28 @@ do
 		then
 			winCount=$(($winCount+1))
 			betno=$(($betno+1))
-			totalStock=$(($totalStock+1))
+			TOTAL_STACK=$(($TOTAL_STACK+1))
 		elif [ $rno -eq 2 ];
 		then
 			betno=$(($betno+1))
 			lossCount=$(($lossCount+1))
-			totalStock=$(($totalStock-1))
+			TOTAL_STACK=$(($TOTAL_STACK-1))
 		fi
 	done
 	
-	if [ $totalStock -eq 150 ];
+	if [ $TOTAL_STACK -eq 150 ];
 	then
-		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $totalStock|| result : Won"
+		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $TOTAL_STACK|| resultOfToDay : Won"
 		totalwinCountCountOfDay=$(($totalwinCountCountOfDay+1))
 		resultOftheDay[$dayCount]="Won"
-	elif [ $totalStock -eq 50 ];
+	elif [ $TOTAL_STACK -eq 50 ];
 	then
-		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $totalStock|| result : Lost"
+		echo "day:$(($dayCount+1)) --> you won $winCount times and loose $lossCount times || totalbalance = $TOTAL_STACK|| totalDaysToPlay : Lost"
 		totalLostCountOfDay=$(($totalLostCountOfDay+1))
 		resultOftheDay[$dayCount]="Lost"
 	fi
 	dayCount=$(($dayCount+1))
-	totalStock=100
+	TOTAL_STACK=100
 done
 
 
